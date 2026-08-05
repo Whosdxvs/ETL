@@ -47,23 +47,24 @@ These findings directly justify the cleaning rules applied: duplicate removal (k
 **Key data quality issue discovered:** Each branch exported dates in a different format/convention (Cali: `YYYY-MM-DD`, Bogotá: `DD/MM/YYYY`, Medellín: `MM-DD-YYYY`). Initially parsing all dates together with `pd.to_datetime(format='mixed')` caused ambiguous dates (day ≤ 12) to be misinterpreted, spreading transactions incorrectly across all 12 months instead of only Feb-Apr 2026. Fixed by parsing each source's date column explicitly in `extract.py` using its known format, before combining sources. This also correctly surfaced one genuinely invalid date from Medellín (`31-04-2026`, an impossible month=31), which is now dropped during cleaning as required by Activity 5.
 
 ## 5. Project Structure
-```text
 Lab1B_ETL/
+├── raw/                       # Raw input datasets (Cali, Bogota, Medellin, reference tables)
 ├── data/
-│   ├── raw/                  # Raw input datasets
-│   ├── processed/            # Final integrated CSV
-│   └── output/               # Output reports (if any)
-├── database/                 # SQLite database storage
+│   └── processed/             # Final integrated CSV
+├── database/                  # SQLite database storage
 │   └── retail_analytics.db
-├── src/                      # Source code for the ETL blocks
+├── logs/                      # Pipeline execution logs (generated on run)
+│   └── pipeline.log
+├── src/                       # Source code for the ETL blocks
 │   ├── extract.py
 │   ├── transform.py
 │   ├── load.py
 │   ├── queries.py
 │   └── main.py
-├── docs/                     # Documentation files
-│   └── pipeline_diagram.md
-├── README.md                 # This file
+├── docs/                      # Documentation files
+│   ├── pipeline_diagram.md
+│   └── pipeline_diagram.png
+├── README.md                  # This file
 ```
 
 ## 6. Execution Instructions
@@ -81,18 +82,20 @@ This single command will execute the entire pipeline from extraction to analytic
 - **SQL**: Analytical querying.
 
 ## 8. Example Analytical Results
-```text
+
 1. Total Revenue by Month
   month  total_revenue
-2026-02     59569700.0
-2026-03     53801520.0
-2026-04     49609000.0
+2026-02     62867700.0
+2026-03     60919160.0
+2026-04     57004000.0
 
 2. Top-selling Products
-        product_name  total_revenue
-        Air Fryer 4L     32292000.0
-        Blender 500W     22225000.0
-```
+        product_name  total_units_sold  total_revenue
+        Air Fryer 4L                84     32292000.0
+        Blender 500W               127     22225000.0
+ Wireless Headphones               101     21874600.0
+Coffee Maker Premium                55     15675000.0
+          Hair Dryer               102     13284000.0
 
 ---
 
