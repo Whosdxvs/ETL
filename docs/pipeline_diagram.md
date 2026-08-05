@@ -1,6 +1,6 @@
 # ETL Pipeline Architecture
 
-## 1. Block Diagram
+## 1. Block Diagram.
 
 El siguiente diagrama ilustra el flujo de los datos desde que son extraídos de los sistemas origen, hasta que son cargados en la base de datos analítica.
 
