@@ -43,7 +43,7 @@ def main():
     # 4. Transform and Integrate
     print("\n[4/5] Transforming and Integrating Data...")
     try:
-        integrated_df = transform_and_integrate(clean_sales_df, products_df, stores_df, promotions_df)
+        integrated_df = transform_and_integrate(clean_sales_df, products_df, stores_df, promotions_df, targets_df)
         print(f"Integrated dataset created with {len(integrated_df.columns)} columns.")
     except Exception as e:
         print(f"CRITICAL ERROR during Transformation: {e}")

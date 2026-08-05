@@ -31,7 +31,6 @@ def clean_and_harmonize(df):
     df['payment_method'] = df['payment_method'].str.title()
     
     # Parse dates
-    # We have different formats: YYYY-MM-DD, DD/MM/YYYY, MM-DD-YYYY
     # Dates were already parsed per-source in extract.py using their correct format
     df['sale_date'] = pd.to_datetime(df['sale_date'], errors='coerce')
 
@@ -54,7 +53,7 @@ def clean_and_harmonize(df):
 
     return df
 
-def transform_and_integrate(sales_df, products_df, stores_df, promotions_df):
+def transform_and_integrate(sales_df, products_df, stores_df, promotions_df, targets_df):
     """Activity 6: Transform and integrate."""
     # Ensure references are trimmed and uppercase
     products_df['product_id'] = products_df['product_id'].str.strip().str.upper()
@@ -82,6 +81,10 @@ def transform_and_integrate(sales_df, products_df, stores_df, promotions_df):
     # Date components
     # month format YYYY-MM
     merged['month'] = merged['sale_date'].dt.to_period('M').astype(str)
+
+    # Merge monthly sales targets by store and month
+    merged = pd.merge(merged, targets_df[['store_id', 'month', 'sales_target']], on=['store_id', 'month'], how='left')
+
     # week format e.g. 2026-W05
     merged['week'] = merged['sale_date'].dt.strftime('%G-W%V')
     merged['day_name'] = merged['sale_date'].dt.day_name()
