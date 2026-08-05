@@ -16,7 +16,7 @@ The ETL pipeline follows a modular, block-based architecture.
 5. **Store Target Performance**: Evaluate which stores met or missed their monthly sales targets.
 6. **Sales Trend Over Time (Weekly)**: Granular view of weekly progress.
 
-## 4. ETL Pipeline Description
+## 4. ETL Pipeline Description 
 - **Extract**: Reads transactions from Cali (`.csv`), Bogotá (`.json`), and Medellín (`.xml`), along with reference data, converting them to a common pandas DataFrame schema.
 - **Profile & Clean**: Standardizes text case (e.g., uppercase IDs), parses dates, drops duplicates, and removes invalid records.
 - **Transform & Integrate**: Joins transactions with product, store, and promotion details. Calculates derived fields like `gross_sales`, `discount_amount`, and `net_sales`.
