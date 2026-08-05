@@ -47,6 +47,7 @@ These findings directly justify the cleaning rules applied: duplicate removal (k
 **Key data quality issue discovered:** Each branch exported dates in a different format/convention (Cali: `YYYY-MM-DD`, Bogotá: `DD/MM/YYYY`, Medellín: `MM-DD-YYYY`). Initially parsing all dates together with `pd.to_datetime(format='mixed')` caused ambiguous dates (day ≤ 12) to be misinterpreted, spreading transactions incorrectly across all 12 months instead of only Feb-Apr 2026. Fixed by parsing each source's date column explicitly in `extract.py` using its known format, before combining sources. This also correctly surfaced one genuinely invalid date from Medellín (`31-04-2026`, an impossible month=31), which is now dropped during cleaning as required by Activity 5.
 
 ## 5. Project Structure
+```text
 Lab1B_ETL/
 ├── raw/                       # Raw input datasets (Cali, Bogota, Medellin, reference tables)
 ├── data/
