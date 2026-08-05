@@ -16,7 +16,9 @@ def extract_sales_csv(file_path):
             'promotion_code': 'promotion_code',
             'payment_method': 'payment_method'
         }, inplace=True)
+        df['sale_date'] = pd.to_datetime(df['sale_date'], format='%Y-%m-%d', errors='coerce')
         return df
+    
     except Exception as e:
         print(f"Error reading {file_path}: {e}")
         return pd.DataFrame()
@@ -35,7 +37,9 @@ def extract_sales_json(file_path):
             'promocion': 'promotion_code',
             'medio_pago': 'payment_method'
         }, inplace=True)
+        df['sale_date'] = pd.to_datetime(df['sale_date'], format='%d/%m/%Y', errors='coerce')
         return df
+    
     except Exception as e:
         print(f"Error reading {file_path}: {e}")
         return pd.DataFrame()
@@ -54,7 +58,9 @@ def extract_sales_xml(file_path):
             'promo_code': 'promotion_code',
             'payment': 'payment_method'
         }, inplace=True)
+        df['sale_date'] = pd.to_datetime(df['sale_date'], format='%m-%d-%Y', errors='coerce')
         return df
+    
     except Exception as e:
         print(f"Error reading {file_path}: {e}")
         return pd.DataFrame()

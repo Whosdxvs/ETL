@@ -3,10 +3,12 @@
 ## 1. Project Overview
 This project implements a basic ETL (Extract, Transform, Load) pipeline to integrate heterogeneous retail data sources (CSV, JSON, XML) from different branches into a structured analytical repository. The resulting SQLite database powers analytical queries that help managers make strategic decisions.
 
-## 2. System Architecture
+# 2. System Architecture
 The ETL pipeline follows a modular, block-based architecture.
 
-*(Note: Please refer to `docs/pipeline_diagram.md` for the Mermaid diagram of the architecture.)*
+![Pipeline Diagram](docs/pipeline_diagram.png)
+
+*(See `docs/pipeline_diagram.md` for the interactive Mermaid version.)*
 
 ## 3. Selected Business Requirements
 1. **Total Revenue by Month**: Track overall sales performance over time.
@@ -16,6 +18,17 @@ The ETL pipeline follows a modular, block-based architecture.
 5. **Store Target Performance**: Evaluate which stores met or missed their monthly sales targets.
 6. **Sales Trend Over Time (Weekly)**: Granular view of weekly progress.
 
+### Requirements Traceability Table
+
+| Business Requirement | Required Data | Pipeline Block | Expected Output |
+|---|---|---|---|
+| Total Revenue by Month | `sale_date`, `net_sales` | Transform/Integrate → Query | Table with month and summed revenue |
+| Top-selling Products | `product_id`, `quantity`, `net_sales`, `products.csv` | Transform/Integrate → Query | Top 5 products by revenue and units sold |
+| Sales by Category | `product_id`, `category` (products.csv), `net_sales` | Transform/Integrate → Query | Revenue and transaction count per category |
+| Sales by Region and Store | `store_id`, `region`, `city` (stores.csv), `net_sales` | Transform/Integrate → Query | Revenue grouped by region and store |
+| Store Target Performance | `store_id`, `net_sales`, `monthly_targets.csv` | Transform/Integrate → Validate → Query | Actual sales vs. target comparison (Met/Missed) |
+| Sales Trend Over Time (Weekly) | `sale_date`, `net_sales` | Transform/Integrate → Query | Revenue grouped by week |
+
 ## 4. ETL Pipeline Description
 - **Extract**: Reads transactions from Cali (`.csv`), Bogotá (`.json`), and Medellín (`.xml`), along with reference data, converting them to a common pandas DataFrame schema.
 - **Profile & Clean**: Standardizes text case (e.g., uppercase IDs), parses dates, drops duplicates, and removes invalid records.
@@ -23,6 +36,15 @@ The ETL pipeline follows a modular, block-based architecture.
 - **Validate**: Enforces data integrity checks (e.g., matching foreign keys, no nulls in required fields).
 - **Load**: Stores the final integrated dataset in `data/processed/integrated_sales.csv` and loads it into a SQLite database (`retail_analytics.db`).
 - **Query**: Executes analytical SQL queries on the final database to satisfy the business requirements.
+
+### Profiling Findings (Activity 4)
+- Total records extracted: 763 (Cali: CSV, Bogotá: JSON, Medellín: XML)
+- Missing values: 0 in required fields; 718 nulls in `promotion_code` (most sales had no promotion applied)
+- Duplicate `sale_line_id` values found: 3
+- After cleaning: 755 valid rows (8 rows removed: duplicates + invalid quantity/price/date)
+
+These findings directly justify the cleaning rules applied: duplicate removal (keep first valid occurrence), and consistent handling of missing promotion codes (filled as `'None'`).
+**Key data quality issue discovered:** Each branch exported dates in a different format/convention (Cali: `YYYY-MM-DD`, Bogotá: `DD/MM/YYYY`, Medellín: `MM-DD-YYYY`). Initially parsing all dates together with `pd.to_datetime(format='mixed')` caused ambiguous dates (day ≤ 12) to be misinterpreted, spreading transactions incorrectly across all 12 months instead of only Feb-Apr 2026. Fixed by parsing each source's date column explicitly in `extract.py` using its known format, before combining sources. This also correctly surfaced one genuinely invalid date from Medellín (`31-04-2026`, an impossible month=31), which is now dropped during cleaning as required by Activity 5.
 
 ## 5. Project Structure
 ```text

@@ -32,8 +32,8 @@ def clean_and_harmonize(df):
     
     # Parse dates
     # We have different formats: YYYY-MM-DD, DD/MM/YYYY, MM-DD-YYYY
-    # Using format='mixed' allows pandas to infer, errors='coerce' turns invalid like 31-04-2026 to NaT
-    df['sale_date'] = pd.to_datetime(df['sale_date'], format='mixed', errors='coerce')
+    # Dates were already parsed per-source in extract.py using their correct format
+    df['sale_date'] = pd.to_datetime(df['sale_date'], errors='coerce')
 
     # Convert quantity and unit_price to numeric
     df['quantity'] = pd.to_numeric(df['quantity'], errors='coerce')
