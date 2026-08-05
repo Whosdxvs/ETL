@@ -6,7 +6,7 @@ This project implements a basic ETL (Extract, Transform, Load) pipeline to integ
 # 2. System Architecture
 The ETL pipeline follows a modular, block-based architecture.
 
-![Pipeline Diagram](docs/pipeline_diagram.png)
+![Pipeline Diagram](docs/pipeline_diagram.jpeg)
 
 *(See `docs/pipeline_diagram.md` for the interactive Mermaid version.)*
 
